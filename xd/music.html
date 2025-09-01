@@ -39,6 +39,7 @@
     border-radius:15px; width:260px; text-align:center; 
     box-shadow:0 0 15px rgba(255,0,85,0.3);
     transition:transform 0.3s, box-shadow 0.3s;
+    overflow:hidden;
   }
   .video-card:hover {
     transform:translateY(-5px) scale(1.03);
@@ -92,6 +93,21 @@
   }
   #audioPlayer{ width:90%; }
 
+  /* Notificación verde */
+  #toast {
+    position:fixed; bottom:80px; right:20px;
+    background:#1db954; color:#fff; padding:10px 20px;
+    border-radius:30px; font-weight:bold; display:none;
+    box-shadow:0 0 15px rgba(0,255,0,0.6);
+    animation: fadeInOut 2s ease forwards;
+  }
+  @keyframes fadeInOut {
+    0%{opacity:0; transform:translateY(20px);}
+    20%{opacity:1; transform:translateY(0);}
+    80%{opacity:1;}
+    100%{opacity:0; transform:translateY(20px);}
+  }
+
   footer{
     margin-top:40px; text-align:center; font-size:14px; color:#888;
     border-top:1px solid #333; padding:10px;
@@ -136,6 +152,9 @@
 <div id="audioPlayerContainer">
   <audio id="audioPlayer" controls></audio>
 </div>
+
+<!-- Notificación -->
+<div id="toast">✔ Link copiado</div>
 
 <footer>
   API: <a href="https://delirius-apiofc.vercel.app" target="_blank" style="color:#ff0055;">Delirius API</a> | Dev: Black Clover & Shadow.xyz
@@ -186,12 +205,22 @@ async function buscar(){
         <p><strong>Duración:</strong> ${video.duration}</p>
         <button onclick="reproducirVideo('${video.videoId}')">🎬 Ver Video</button>
         <button onclick="escucharAudio('${video.url}')">🎵 Escuchar Audio</button>
+        <button onclick="descargarVarias('${video.url}')">⬇ Más Descargas</button>
         <button onclick="copiarLink('${video.url}')">📋 Copiar Link</button>`;
       container.appendChild(card);
     });
   }catch(err){ container.innerHTML='Error al buscar videos'; console.error(err); }
 }
-function copiarLink(url){navigator.clipboard.writeText(url).then(()=>alert('Link copiado')).catch(()=>alert('Error al copiar')); }
+
+/* Copiar con toast */
+function copiarLink(url){
+  navigator.clipboard.writeText(url).then(()=>{
+    const toast=document.getElementById('toast');
+    toast.style.display='block';
+    setTimeout(()=>{toast.style.display='none';},2000);
+  }).catch(()=>alert('Error al copiar'));
+}
+
 function reproducirVideo(videoId){window.open(`https://www.youtube.com/watch?v=${videoId}`,'_blank');}
 async function escucharAudio(url){
   try{
@@ -204,15 +233,27 @@ async function escucharAudio(url){
   }catch(err){console.error(err); alert("Error al reproducir audio");}
 }
 
+/* Más descargas */
+async function descargarVarias(url){
+  try{
+    const res=await fetch(`https://delirius-apiofc.vercel.app/download/ytmp4?url=${encodeURIComponent(url)}`);
+    const data=await res.json();
+    if(!data.status) return alert("No se pudo obtener info");
+    let links=`
+      <p><a href="${data.data.download.url}" target="_blank">🎵 MP3</a></p>
+      <p><a href="${data.data.download.url}" target="_blank">📹 MP4 360p</a></p>
+      <p><a href="${data.data.download.url}" target="_blank">📺 MP4 720p</a></p>`;
+    alert("Opciones de descarga disponibles:\n\n"+links.replace(/<[^>]+>/g,''));
+  }catch(err){console.error(err);}
+}
+
 /* Playlist */
 const playlist=[];
 async function downloadMedia(){
   const url=document.getElementById('ytUrl').value.trim();
   if(!url) return alert('Ingresa un enlace de YouTube');
   try{
-    const apiUrl=url.includes('ytmp4')
-      ? `https://delirius-apiofc.vercel.app/download/ytmp4?url=${encodeURIComponent(url)}`
-      : `https://delirius-apiofc.vercel.app/download/ytmp3?url=${encodeURIComponent(url)}`;
+    const apiUrl=`https://delirius-apiofc.vercel.app/download/ytmp3?url=${encodeURIComponent(url)}`;
     const res=await fetch(apiUrl); const data=await res.json();
     if(!data.status) return alert('Error al obtener el media');
     const song={
