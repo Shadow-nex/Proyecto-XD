@@ -1,222 +1,224 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bienvenido — shadow.xyz</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body,html{width:100%;height:100%;overflow:hidden;font-family:'Arial',sans-serif;background:#0f172a;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;position:relative;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antuan</title>
+    <style>
+        /* Estilos generales */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;}
+        /* Contenedor principal */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
 
-h1{
-  font-size:32px;
-  font-weight:700;
-  margin-bottom:20px;
-  text-align:center;
-  z-index:1;
-  color:#fff;
-  text-shadow:0 0 10px #7c3aed,0 0 20px #4f46e5,0 0 30px #c084fc;
-  animation: glow 1.5s ease-in-out infinite alternate;
-}
+        /* Cabecera */
+        .header {
+            background: linear-gradient(135deg, #00cc66, #006633);
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
 
-@keyframes glow{
-  0%{text-shadow:0 0 10px #7c3aed,0 0 20px #4f46e5,0 0 30px #c084fc;}
-  100%{text-shadow:0 0 20px #c084fc,0 0 30px #a78bfa,0 0 40px #7c3aed;}
-}
+        /* Área de chat */
+        #chat {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
 
-/* Spinner 3D neón con pulso */
-.spinner{
-  width:90px;
-  height:90px;
-  border:8px solid rgba(255,255,255,0.1);
-  border-top:8px solid #7c3aed;
-  border-radius:50%;
-  animation:spin 1s linear infinite,neon 1.5s ease-in-out infinite alternate,pulse 1.2s infinite;
-  margin-bottom:15px;
-  z-index:1;
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-@keyframes neon{0%{box-shadow:0 0 20px #7c3aed,0 0 35px #4f46e5,0 0 50px #c084fc;}100%{box-shadow:0 0 35px #c084fc,0 0 50px #a78bfa,0 0 70px #7c3aed;}}
-@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
+        /* Mensajes */
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+            color: #fff;
+            word-wrap: break-word;
+        }
 
-/* Texto dinámico debajo del spinner */
-.loading-message{
-  font-size:14px;
-  font-style:italic;
-  margin-bottom:10px;
-  color:#a78bfa;
-  text-shadow:0 0 10px #7c3aed;
-  min-height:20px;
-  z-index:1;
-}
+        .message.system {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff6666;
+        }
 
-/* Barra de progreso con onda */
-.progress-container{
-  width:240px;
-  height:14px;
-  background:rgba(255,255,255,0.1);
-  border-radius:7px;
-  overflow:hidden;
-  z-index:1;
-  margin-top:5px;
-}
+        .message.admin {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+        }
 
-.progress-bar{
-  width:0%;
-  height:100%;
-  background:linear-gradient(270deg,#7c3aed,#c084fc,#a78bfa);
-  border-radius:7px;
-  transition:width 0.2s ease;
-  background-size:200% 200%;
-  animation:wave 2s linear infinite;
-}
-@keyframes wave{
-  0%{background-position:0% 50%;}
-  100%{background-position:100% 50%;}
-}
+        /* Input y botón */
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+        }
 
-.progress-text{
-  font-size:14px;
-  color:#cbd5e1;
-  margin-top:5px;
-  z-index:1;
-  text-align:center;
-  text-shadow:0 0 5px #7c3aed;
-}
+        #message {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            margin-right: 10px;
+        }
 
-.fade-out{animation:fadeOut 0.8s forwards;}
-@keyframes fadeOut{to{opacity:0;}}
+        #message::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
 
-/* Footer */
-footer{
-  position:absolute;
-  bottom:10px;
-  font-size:13px;
-  color:#c084fc;
-  z-index:2;
-  text-align:center;
-  text-shadow:0 0 10px #7c3aed,0 0 20px #a78bfa;
-  animation:footerGlow 2s ease-in-out infinite alternate;
-}
-@keyframes footerGlow{
-  0%{text-shadow:0 0 10px #7c3aed,0 0 20px #c084fc;}
-  100%{text-shadow:0 0 20px #c084fc,0 0 40px #7c3aed;}
-}
-</style>
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #00cc66, #006633);
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #006633, #00cc66);
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Efecto de fondo dimensional */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 0, 0.2) 10%, transparent 10.01%);
+            background-size: 20px 20px;
+            animation: moveBackground 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes moveBackground {
+            from { transform: translateY(0); }
+            to { transform: translateY(20px); }
+        }
+
+        /* Scrollbar personalizada */
+        #chat::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #chat::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00cc66, #006633);
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">Antuan</div>
+        <div id="chat"></div>
+        <div class="input-container">
+            <input type="text" id="message" placeholder="Escribe un mensaje..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
 
-<canvas id="bgCanvas"></canvas>
-<h1 id="welcomeText"></h1>
-<div class="spinner"></div>
-<div class="loading-message" id="loadingMessage"></div>
-<div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-<div class="progress-text" id="progressText">0%</div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const chatDiv = document.getElementById('chat');
+        const messageInput = document.getElementById('message');
 
-<footer>© 2024 - 2025 shadow.xyz — Todos los derechos reservados</footer>
+        // Solicitar nombre de usuario
+        const username = prompt('Ingresa tu nombre de usuario:');
+        socket.emit('set username', username);
 
-<script>
-/* ==== Partículas constelación con efecto energía ==== */
-const canvas=document.getElementById('bgCanvas');
-const ctx=canvas.getContext('2d');
-let width=canvas.width=window.innerWidth;
-let height=canvas.height=window.innerHeight;
+        // Mostrar historial de chat
+        socket.on('chat history', (history) => {
+            history.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${msg.type}`;
+                messageElement.textContent = msg.text;
+                messageElement.style.color = getRandomColor(); // Color aleatorio para cada mensaje
+                chatDiv.appendChild(messageElement);
+            });
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        });
 
-const particles=[];
-const numParticles=150;
-let mouse={x:width/2,y:height/2};
+        // Recibir mensajes
+        socket.on('chat message', (msg) => {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${msg.type}`;
+            messageElement.textContent = msg.text;
+            messageElement.style.color = getRandomColor(); // Color aleatorio para cada mensaje
+            chatDiv.appendChild(messageElement);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        });
 
-for(let i=0;i<numParticles;i++){
-  particles.push({
-    x:Math.random()*width,
-    y:Math.random()*height,
-    r:Math.random()*2+1,
-    dx:(Math.random()-0.5)*0.7,
-    dy:(Math.random()-0.5)*0.7
-  });
-}
+        // Enviar mensaje al presionar Enter
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
 
-function animateParticles(){
-  ctx.clearRect(0,0,width,height);
-  for(let i=0;i<numParticles;i++){
-    const p=particles[i];
-    p.x+=p.dx;p.y+=p.dy;
-    if(p.x<0||p.x>width)p.dx*=-1;
-    if(p.y<0||p.y>height)p.dy*=-1;
+        // Enviar mensaje
+        function sendMessage() {
+            const message = messageInput.value;
+            if (message) {
+                socket.emit('chat message', message);
+                messageInput.value = '';
+            }
+        }
 
-    // interacción mouse
-    const distX=p.x-mouse.x;
-    const distY=p.y-mouse.y;
-    const dist=Math.sqrt(distX*distX+distY*distY);
-    if(dist<120){p.x+=distX*0.008;p.y+=distY*0.008;}
-
-    // dibujar partículas
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle='rgba(124,58,237,0.8)';
-    ctx.fill();
-
-    // líneas tipo energía
-    for(let j=i+1;j<numParticles;j++){
-      const p2=particles[j];
-      const dx=p.x-p2.x;
-      const dy=p.y-p2.y;
-      const distance=Math.sqrt(dx*dx+dy*dy);
-      if(distance<110){
-        ctx.beginPath();
-        ctx.strokeStyle=`rgba(196,181,253,${1-distance/110})`;
-        ctx.moveTo(p.x,p.y);
-        ctx.lineTo(p2.x,p2.y);
-        ctx.stroke();
-      }
-    }
-  }
-  requestAnimationFrame(animateParticles);
-}
-animateParticles();
-
-window.addEventListener('resize',()=>{width=canvas.width=window.innerWidth;height=canvas.height=window.innerHeight;});
-window.addEventListener('mousemove',(e)=>{mouse.x=e.clientX;mouse.y=e.clientY;});
-
-/* ==== Máquina de escribir con glow ==== */
-const text="ʙɪᴇɴᴠᴇɴɪᴅᴏ/ᴀ sᴏʏ sʜᴀᴅᴏᴡ.xʏᴢ 📡";
-const welcomeText=document.getElementById('welcomeText');
-let index=0;
-function typeWriter(){
-  if(index<text.length){
-    welcomeText.innerHTML+=text.charAt(index);
-    index++;
-    setTimeout(typeWriter,45);
-  }
-}
-typeWriter();
-
-/* ==== Mensajes dinámicos ==== */
-const messages=["Cargando datos...", "Preparando el entorno...", "Optimización de energía...", "Conectando con el servidor...", "Todo listo en breve ✨"];
-let msgIndex=0;
-const loadingMessage=document.getElementById('loadingMessage');
-setInterval(()=>{
-  loadingMessage.textContent=messages[msgIndex];
-  msgIndex=(msgIndex+1)%messages.length;
-},1800);
-
-/* ==== Barra de progreso fluida ==== */
-const progressBar=document.getElementById('progressBar');
-const progressText=document.getElementById('progressText');
-let progress=0;
-const interval=setInterval(()=>{
-  progress+=Math.floor(Math.random()*3)+1;
-  if(progress>100)progress=100;
-  progressBar.style.width=progress+'%';
-  progressText.innerHTML=progress+'%';
-  if(progress===100){
-    clearInterval(interval);
-    document.body.classList.add('fade-out');
-    setTimeout(()=>window.location.href='xd/music.html',800);
-  }
-},80);
-</script>
+        // Función para generar un color aleatorio
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
 </body>
 </html>
